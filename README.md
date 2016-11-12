@@ -41,7 +41,7 @@ Run our local server in a separate terminal. You should keep it running through 
 
 Fetch this repository, build and deploy locally
 
-	git clone -b tutorial https://github.com/wedeploy/demo-quiz.git
+	git clone https://github.com/wedeploy/demo-quiz.git
 	cd demo-quiz
 	we build
 	we link
@@ -53,7 +53,7 @@ You should see the demo home page in your browser.
 Once you're able to run it locally, stop it and switch to this tutorial branch
 
 	we unlink
-	git checkout -b tutorial origin/tutorial
+	git checkout tutorial origin/tutorial
 
 
 Create your workspace folder next to the cloned tutorial
