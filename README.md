@@ -63,8 +63,7 @@ Create your workspace folder next to the cloned tutorial
 	cd devqa
 
 
-You will find in each step a folder `final` containing the final state your workspace should be at after that step. You can start this tutorial at any step by copying the final state of the previous one into your `devqa` folder.
-
+In the tutorial directory (`demo-quiz` at the `tutorial` branch) you’ll find in each step a directory `final` containing the final state your workspace should be at after that step. You can start this tutorial at any step by copying the final state of the previous one into your `devqa` directory.
 
 
 ## Tutorials
