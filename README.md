@@ -36,49 +36,91 @@ For this specific demo, you'll also need to install [Java 8](https://java.com/en
 
 Run our local server in a separate terminal. You should keep it running through this entire tutorial.
 
-	we run
+```sh
+$ we run
 
+WeDeploy is ready! 30s
+You can now test your apps locally. Press Ctrl+C to shut it down when you are done.
+```
 
 Fetch this repository, build and deploy locally
 
-	git clone https://github.com/wedeploy/demo-quiz.git
-	cd demo-quiz
-	we build
-	we link
-	open devqa.wedeploy.me
-
+```
+$  mkdir devcon && cd devcon
+devcon $  git clone https://github.com/wedeploy/demo-quiz.git
+devcon $  cd demo-quiz
+devcon/demo-quiz $  we build
+devcon/demo-quiz $  we link
+devcon/demo-quiz $  open devqa.wedeploy.me
+```
 
 You should see the demo home page in your browser.
 
 Once you're able to run it locally, stop it and switch to this tutorial branch
 
-	we unlink
-	git checkout tutorial origin/tutorial
+```sh
+devcon/demo-quiz $  we unlink
+devcon/demo-quiz $  git checkout tutorial origin/tutorial
+```
 
+Create your workspace directory next to the cloned tutorial
 
-Create your workspace folder next to the cloned tutorial
+```sh
+devcon/demo-quiz $  cd ..
+devcon $  mkdir devqa
+devcon $  ls
+demo-quiz devqa
+```
 
-	cd ..
-	mkdir devqa
-	cd devqa
-
-
-In the tutorial directory (`demo-quiz` at the `tutorial` branch) you’ll find in each step a directory `final` containing the final state your workspace should be at after that step. You can start this tutorial at any step by copying the final state of the previous one into your `devqa` directory.
+Now let's proceed to the tutorials!
 
 
 ## Tutorials
 
 
+In the tutorial directory (`demo-quiz` at the `tutorial` branch) you’ll find in each step a directory `final` containing the final state your workspace should be at after that step. 
+
+You can start this tutorial at any step by copying the final state of the previous one into your `devqa` directory (your workspace).
+
+
+```
+.demo-quiz (tutorial branch)
+├── 01-hosting
+│   ├── assets    //  files created in this step
+│   └── final     //  the final state of the workspace 
+...                   once the step is completed
+```
+
+In the following subsections each command that you’re supposed to run in  the terminal is prefixed with a directory relative to a root where the two directories were created. 
+
+```sh
+.
+├── demo-quiz      (tutorial)
+└── devqa          (your workspace)
+```
+
+
+So that you’ll see all terminal inputs like:
+
+```sh
+devqa $  echo hello!
+hello!
+```
+
+
 ### 01 - Hosting
 
-The simplest service we provide is the static hosting. 
+The simplest service we provide is static hosting. 
 
-Go to your workspace and copy our assets for this step
+Go to your workspace (`devqa`) and copy the assets for this step
 
-	cp -r ../demo-quiz/01-hosting/assets/ui ./
-	cd ui
+```sh
+devqa $  cp -r ../demo-quiz/01-hosting/assets/ui ./
+devqa $  cd ui
 
-And create a file `container.json` with the content
+```
+
+And create a file named `container.json` with the following content
 
 ```json
 {
@@ -87,22 +129,45 @@ And create a file `container.json` with the content
 }
 ```
 
+You should now have:
+
+```
+.devqa/
+└── ui/
+    ├── container.json    # wedeploy service description
+    ├── favicon.ico       # icon
+    ├── index.html        # html!
+    ├── index.js          # js!
+    ├── assets/           # css, api.js, fonts
+    └── ranking/          # ranking section
+    ...
+```
+
+
 Now you can try it locally in the command line bellow
 
-	we link --project devqa
+```sh
+devqa $  we link --project devqa
+```
 
-You should see the output
+and should see the output
 
+```sh
 	devqa.wedeploy.me                            UP
 	 ● ui.devqa.wedeploy.me                wedeploy/hosting       up
+```
 
-You can see the main page of the quiz in your browser at http://ui.devqa.wedeploy.me.
+
+Now go to the main page of the quiz in your web browser at [http://ui.devqa.wedeploy.me](http://ui.devqa.wedeploy.me).
 
 The `link` command does more than just deploy your service. It links your folder with the service running locally, so you can apply changes on-the-fly. Try to change the content of `index.html`, for example, and see it take imediate effect.
 
 You can stop it by running
 
-	we unlink --project devqa
+
+```sh
+devqa $  we unlink --project devqa
+```
 
 
 ### 02 - Java
