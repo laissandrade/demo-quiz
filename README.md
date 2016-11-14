@@ -175,13 +175,13 @@ devqa $  cp -r ../demo-quiz/02-java/assets/generator ./
 devqa $  cd generator
 ```
 
-This is a generic Java microservice that gerenates a random round of questions for our quiz. It uses [gradle](https://gradle.org/) for build management. The server listens to the port `8080`. You can try it locally by running:
+This is a generic Java microservice that gerenates a random round of questions for our quiz. It uses [gradle](https://gradle.org/) for build management. The server listens to the port `8090`. You can try it locally by running:
 
 ```sh
 devqa/generator $  ./gradlew run
 ```
 
-You should be able to request questions through the url [http://localhost:8080/questions](http://localhost:8080/questions).
+You should be able to request questions through the url [http://localhost:8090/questions](http://localhost:8090/questions).
 
 To turn this into a WeDeploy service, create a file `container.json` with the following content:
 
@@ -189,7 +189,7 @@ To turn this into a WeDeploy service, create a file `container.json` with the fo
 {
   "id": "generator",
   "type": "wedeploy/java",
-  "port": 8080
+  "port": 8090
 }
 ```
 
@@ -224,9 +224,10 @@ To improve startup time on server deployment we can specify a `build` hook:
 {
   "id": "generator",
   "type": "wedeploy/java",
-    "hooks": {
-        "build": "./gradlew clean build"
-    }
+  "port": 8090,
+  "hooks": {
+    "build": "./gradlew clean build"
+  }
 }
 ```
 
@@ -290,10 +291,10 @@ You can see the main page of the quiz in your browser at [http://devqa.wedeploy.
 
 Now that those containers are tightened up, its easy to integrate them. You can use our [javascript client](http://wedeploy.com/docs/intro/using-the-api-client.html) to load questions from the *generator* service.
 
-For simplicity, its already downloaded and added to your html:
+For simplicity, its already downloaded and added to your html. You can see in your index.html, for example:
 
 ```html
-<script src="./assets/wedeploy.js"></script>
+<script src="/assets/wedeploy.js"></script>
   <script src="./index.js"></script>
 </body>
 ```
@@ -492,7 +493,10 @@ You should see the output:
 
 We already give you a simple login page. Go to your workspace and copy our assets for this step:
 
-	cp -r ../demo-quiz/05-authentication/assets/login ./ui/
+```sh
+devqa $  cp -r ../demo-quiz/05-authentication/assets/ui/login ./ui/
+devqa $  cp ../demo-quiz/05-authentication/assets/ui/index.html ./ui/
+```
 
 If you're already running your project, check the new page on the browser at [http://devqa.wedeploy.me/login](http://devqa.wedeploy.me/login).
 
@@ -519,8 +523,8 @@ Here we'll guide you through the GitHub flow, but the second is analogous to thi
 As we changed a configuration, we need to unlink and link the service with our local server
 
 ```sh
-devqa $  we unlink auth.devqa
-devqa $  we link auth.devqa
+devqa/auth $  we unlink
+devqa/auth $  we link
 ```
 
 To integrate with our WebServer, add the global reference to `auth` on `ui/login/index.js`:
@@ -571,27 +575,9 @@ function main() {
 
 You should be redirected to login page if you are not logged in.
 
-To complete the flow, you can fetch user basic information and add a signout button. First, add this snippet into your `ui/index.html`:
+To complete the flow, integrate in the modified main page the user's basic information and signout button.
 
-```diff
-    <div class="wrapper ranking-offset flex-column-center-center">
-
-+     <div class="menu">
-+       <button class="avatar">
-+         <span id="userInitials"></span>
-+         <img id="userPhoto" src="" />
-+         <div id="userName" class="btn-tooltip"></div>
-+       </button>
-+       <button class="logout" onclick="signOut();">
-+         <span class="icon-12-leave"></span>
-+         <div class="btn-tooltip">Sign Out</div>
-+       </button>
-+     </div>
-+
-      <header class="grid-quiz">
-```
-
-Add those elements to your `ui/index.js`:
+First, add the new elements to your `ui/index.js`:
 
 ```diff
 const ELEMS = {
@@ -662,11 +648,11 @@ The WeDeploy Auth service enables by default user authentication via *email* and
 We already give you a simple sign up page, and the complete login page. Go to your workspace and copy our assets for this step:
 
 ```sh
-devqa $  cp -r ../demo-quiz/06-signup/assets/signup ./ui/
-devqa $  cp ../demo-quiz/06-signup/assets/login/* ./ui/login/
+devqa $  cp -r ../demo-quiz/06-signup/assets/ui/signup ./ui/
+devqa $  cp ../demo-quiz/06-signup/assets/ui/login/* ./ui/login/
 ```
 
-You can check that your login with GitHub still works, and the login with Google is implemented as well. To integrate the sinup page, add the global reference to `auth` on `ui/signup/index.js`:
+You can check that your login with GitHub still works, and the login with Google is implemented as well. We added some methods to handle login failures. To integrate the sinup page, add the global reference to `auth` on `ui/signup/index.js`:
 
 ```js
 const auth = WeDeploy.auth(`auth.${DOMAIN}`);
@@ -805,22 +791,11 @@ For more information on how to use the *email* service see [email](http://wedepl
 Now go to your workspace and copy our assets for this step
 
 ```
-devqa $  cp -r ../demo-quiz/07-email/assets/forgot-password ./ui/
+devqa $  cp -r ../demo-quiz/07-email/assets/ui/forgot-password ./ui/
+devqa $  cp ../demo-quiz/07-email/assets/ui/login/index.html ./ui/login/
 ```
 
-You can see this WebPage by accessing in your browser [http://devqa.wedeploy.me/forgot-password](http://devqa.wedeploy.me/forgot-password).
-
-You can first add a link to it in your login page by adding the snipped into your `ui/login/index.html`:
-
-```diff
-<div class="form-group">
- <div class="col-flex-row-spacebetween-center">
-    <label>Password</label>
-+   <a class="forgot-password" href="../forgot-password/" tabindex="-1">Forgot your password?</a>
-  </div>
-  <input type="password" placeholder="Password (at least 6 characters)" class="form-control" name="password" value="" maxlength="100" required="" />
-</div>
-```
+You should see a link with message `"Forgot your password?"` in your login page, and it should redirect to [http://devqa.wedeploy.me/forgot-password](http://devqa.wedeploy.me/forgot-password).
 
 To integrate the page add the global reference to `auth` on `ui/forgot-password/index.js`:
 
@@ -844,6 +819,16 @@ You should receive an email with instructions within few minutes after reseting 
 ### 08 - Real-time
 
 One of the biggest features of WeDeploy *Data* service is its real-time capabilities. Lets apply them to the quiz by integrating our signed users with stored data.
+
+Go to your workspace (`devqa`) and copy the assets for this step:
+
+```sh
+devqa $  cp ../demo-quiz/08-realtime/assets/ui/assets/style/main.css ./ui/assets/style
+devqa $  cp ../demo-quiz/08-realtime/assets/ui/ranking/* ./ui/ranking
+devqa $  cp ../demo-quiz/08-realtime/assets/ui/index.html ./ui
+```
+
+This step will integrate the ranking page by loading user current score from the datastore. The main quiz page was also changed to show the real-time ranking of users.
 
 First, change your function `storeAnswer` in `ui/index.js` to also store the user *id*:
 
@@ -905,45 +890,7 @@ function handleAnswer(event, isCorrect) {
 
 We can check the counters by accessing on the browser [http://data.devqa.wedeploy.me/users](http://data.devqa.wedeploy.me/users).
 
-Now lets add this information to our WebServer. First, add the following snippet to your `ui/index.html`:
-
-```diff
-  <footer>
-    <button id="next" onclick="showNextQuestion();" class="btn btn-next">Next</button>
-  </footer>
-</div>
-
-+<div id="ranking-container" class="ranking-container flex-column-top-center">
-+
-+  <div class="ranking">
-+    <header>
-+      <div class="content-header">
-+        <a href="#ranking-container"><h1>Ranking</h1></a>
-+      </div>
-+    </header>
-+    <table>
-+      <thead>
-+        <tr>
-+          <th width="10%">
-+            #
-+          </th>
-+          <th width="60%">
-+            Name
-+          </th>
-+          <th width="30%">
-+            Points
-+          </th>
-+        </tr>
-+      </thead>
-+      <tbody id="user-ranking"></tbody>
-+    </table>
-+  </div>
-+</div>
-+
-</div>
-```
-
-Add the element to your `ui/index.js`:
+Now lets add this information to our WebServer. First, add the ranking element to your `ui/index.js`:
 
 ```diff
 const ELEMS = {
@@ -1019,14 +966,6 @@ function main() {
 ```
 
 You should see the ranking on the right side of your main page.
-
-We also added this in a separate page, to be used instead of the current final page of the quiz.
-
-Go to your workspace and copy our assets for this step:
-
-```sh
-devqa $  cp ../demo-quiz/08-realtime/assets/ui/ranking/* ./ui/ranking
-```
 
 You can access the ranking page on your browser at [http://devqa.wedeploy.me/ranking](http://devqa.wedeploy.me/ranking).
 
